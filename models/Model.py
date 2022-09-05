@@ -69,7 +69,7 @@ def val(model, criterion, data_loader, device):
 
         loss = criterion(y_pred, y_true)
         total_loss += loss.item()
-        print(f"    batch no: {i}, loss: {loss.item()}")
+        # print(f"    batch no: {i}, loss: {loss.item()}")
         
         pred_scores.append(torch.sigmoid(y_pred).detach().cpu().numpy())
         true_scores.append(y_true.detach().cpu().numpy())
@@ -77,7 +77,7 @@ def val(model, criterion, data_loader, device):
         # break
 
     true_scores, pred_scores = np.vstack(true_scores).squeeze(0), np.vstack(pred_scores) #true_scores: [1, batch_size], pred_scores: [batch_size, n_classes]
-    print(true_scores.shape, pred_scores.shape)
+    # print(true_scores.shape, pred_scores.shape)
     return total_loss/len(data_loader), true_scores, pred_scores
 
 
@@ -103,7 +103,7 @@ def train(model, optimizer, criterion, data_loader, device):
         loss.backward()
         optimizer.step()        
         
-        print(f"    batch no: {i}, loss: {loss.item()}")
+        # print(f"    batch no: {i}, loss: {loss.item()}")
         # break
 
     return total_loss/len(data_loader)
