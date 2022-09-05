@@ -16,11 +16,11 @@ def generate_class_dict(all_data_file_path, task="SF"):
     print(f"n_classes: {n_classes}")
     return class_dict, n_classes
 
-def compute_class_weights(train_data_file_path, task="SF"):
+def compute_class_weights(train_data_file_path, task="SF", device="cpu"):
     # computing class weights from the train data
     train_df = pd.read_csv(train_data_file_path)
     class_weights = compute_class_weight("balanced", classes=train_df[task].unique(), y=train_df[task].to_numpy())
-    class_weights = torch.tensor(class_weights, dtype=torch.float)#, device=device)
+    class_weights = torch.tensor(class_weights, dtype=torch.float, device=device)
     # print(train_df[task].value_counts(sort=False))
     # print(f"class_weights: {class_weights}")
     return class_weights

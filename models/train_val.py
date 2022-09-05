@@ -28,7 +28,7 @@ train_data_file_path="data/splits/train_24538.txt"
 val_data_file_path="data/splits/val_4458.txt"
 
 class_dict, n_classes = SCOPDataset.generate_class_dict(all_data_file_path, task)
-class_weights = SCOPDataset.compute_class_weights(train_data_file_path, task)
+class_weights = SCOPDataset.compute_class_weights(train_data_file_path, task, device)
 
 
 model = Model.ESMClassifier(n_classes).to(device)

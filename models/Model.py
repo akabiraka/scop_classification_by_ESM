@@ -19,8 +19,8 @@ class ESMClassifier(torch.nn.Module):
     def forward(self, batch_seq_tokens, batch_seq_lengths): 
         # batch_seq_tokens: [batch_size, max_len]
         # batch_seq_lengths: [batch_size]
-
-        batch_seq_lengths = batch_seq_lengths.detach().cpu().numpy().tolist()
+        # print(batch_seq_lengths)
+        # batch_seq_lengths = batch_seq_lengths.detach().cpu().numpy().tolist()
 
         # Extract per-residue representations (on CPU)
         # with torch.no_grad():
@@ -32,7 +32,7 @@ class ESMClassifier(torch.nn.Module):
         ## NOTE: token 0 is always a beginning-of-sequence token, so the first residue is token 1.
         sequence_representations = []
         for i, seq_len in enumerate(batch_seq_lengths):
-            sequence_representations.append(token_representations[i, 1 : seq_len+1].mean(0))
+            sequence_representations.append(token_representations[i, 1 : seq_len.item()+1].mean(0))
 
         sequence_representations = torch.stack(sequence_representations) # shape: [batch_size, 768]
         # print(sequence_representations.shape)
@@ -62,14 +62,14 @@ def val(model, criterion, data_loader, device):
     total_loss = 0.0
     for i, (seqs_tokens, y_true, seqs_lens) in enumerate(data_loader):
         # print(seqs_tokens.shape, y_true.shape, seqs_lens.shape)
-        seqs_tokens, y_true = seqs_tokens.to(device), y_true.to(device)
+        seqs_tokens, y_true, seqs_lens = seqs_tokens.to(device), y_true.to(device), seqs_lens.to(device)
         model.zero_grad(set_to_none=True)
         y_pred = model(seqs_tokens, seqs_lens)
         # print(y_pred.shape)
 
         loss = criterion(y_pred, y_true)
         total_loss += loss.item()
-        # print(f"    batch no: {i}, loss: {loss.item()}")
+        print(f"    batch no: {i}, loss: {loss.item()}")
         
         pred_scores.append(torch.sigmoid(y_pred).detach().cpu().numpy())
         true_scores.append(y_true.detach().cpu().numpy())
@@ -91,10 +91,10 @@ def train(model, optimizer, criterion, data_loader, device):
     total_loss = 0.0
     for i, (seqs_tokens, y_true, seqs_lens) in enumerate(data_loader):
         # print(seqs_tokens.shape, y_true.shape, seqs_lens.shape)
-        seqs_tokens, y_true = seqs_tokens.to(device), y_true.to(device)
+        seqs_tokens, y_true, seqs_lens = seqs_tokens.to(device), y_true.to(device), seqs_lens.to(device)
         model.zero_grad(set_to_none=True)
         y_pred = model(seqs_tokens, seqs_lens)
-        # print(y_pred.shape)
+        #print(y_pred.shape, y_pred.device, y_true.shape, y_true.device)
 
         loss = criterion(y_pred, y_true)
         total_loss += loss.item()
@@ -103,7 +103,7 @@ def train(model, optimizer, criterion, data_loader, device):
         loss.backward()
         optimizer.step()        
         
-        # print(f"    batch no: {i}, loss: {loss.item()}")
+        print(f"    batch no: {i}, loss: {loss.item()}")
         # break
 
     return total_loss/len(data_loader)
