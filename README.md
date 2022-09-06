@@ -1,1 +1,1 @@
-6B1A does not exists
+6B1A, 3D6S does not exists
