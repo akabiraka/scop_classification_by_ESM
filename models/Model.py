@@ -55,13 +55,14 @@ def compute_clssification_metrics(target_classes, pred_classes):
             "target_classes": target_classes}
 
 
+@torch.no_grad()
 def val(model, criterion, data_loader, device): 
     print("validating ...")
     model.eval()
     pred_scores, true_scores = [], []
     total_loss = 0.0
     for i, (seqs_tokens, y_true, seqs_lens) in enumerate(data_loader):
-        # print(seqs_tokens.shape, y_true.shape, seqs_lens.shape)
+        print(seqs_tokens.shape, y_true.shape, seqs_lens.shape)
         seqs_tokens, y_true, seqs_lens = seqs_tokens.to(device), y_true.to(device), seqs_lens.to(device)
         model.zero_grad(set_to_none=True)
         y_pred = model(seqs_tokens, seqs_lens)
@@ -104,7 +105,7 @@ def train(model, optimizer, criterion, data_loader, device):
         optimizer.step()        
         
         print(f"    batch no: {i}, loss: {loss.item()}")
-        # break
+        break
 
     return total_loss/len(data_loader)
     
