@@ -62,7 +62,7 @@ def val(model, criterion, data_loader, device):
     pred_scores, true_scores = [], []
     total_loss = 0.0
     for i, (seqs_tokens, y_true, seqs_lens) in enumerate(data_loader):
-        print(seqs_tokens.shape, y_true.shape, seqs_lens.shape)
+        # print(seqs_tokens.shape, y_true.shape, seqs_lens.shape)
         seqs_tokens, y_true, seqs_lens = seqs_tokens.to(device), y_true.to(device), seqs_lens.to(device)
         model.zero_grad(set_to_none=True)
         y_pred = model(seqs_tokens, seqs_lens)
@@ -70,15 +70,16 @@ def val(model, criterion, data_loader, device):
 
         loss = criterion(y_pred, y_true)
         total_loss += loss.item()
-        print(f"    batch no: {i}, loss: {loss.item()}")
+        # print(f"    batch no: {i}, loss: {loss.item()}")
         
         pred_scores.append(torch.sigmoid(y_pred).detach().cpu().numpy())
         true_scores.append(y_true.detach().cpu().numpy())
         
-        # break
+        # if i==5: break
 
-    true_scores, pred_scores = np.vstack(true_scores).squeeze(0), np.vstack(pred_scores) #true_scores: [1, batch_size], pred_scores: [batch_size, n_classes]
-    # print(true_scores.shape, pred_scores.shape)
+    
+    true_scores, pred_scores = np.hstack(true_scores), np.vstack(pred_scores) #true_scores: [1, batch_size], pred_scores: [batch_size, n_classes]
+    #print(true_scores.shape, pred_scores.shape)
     return total_loss/len(data_loader), true_scores, pred_scores
 
 
@@ -104,8 +105,8 @@ def train(model, optimizer, criterion, data_loader, device):
         loss.backward()
         optimizer.step()        
         
-        print(f"    batch no: {i}, loss: {loss.item()}")
-        break
+        # print(f"    batch no: {i}, loss: {loss.item()}")
+        # break
 
     return total_loss/len(data_loader)
     

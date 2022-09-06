@@ -12,7 +12,7 @@ import Model
 task="SF"
 max_len=512
 dropout=0.5
-init_lr=1e-4
+init_lr=1e-5
 n_epochs=400
 batch_size=32
 device = "cuda" if torch.cuda.is_available() else "cpu" # "cpu"#

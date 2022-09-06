@@ -22,10 +22,10 @@
 ## gpu
 #SBATCH --partition=gpuq                    # the DGX only belongs in the 'gpu'  partition
 #SBATCH --qos=gpu                           # need to select 'gpu' QoS
-#SBATCH --ntasks-per-node=1                 # up to 128; 
+##SBATCH --ntasks-per-node=1                 # up to 128; 
 #SBATCH --gres=gpu:A100.40gb:1              # up to 8; only request what you need
-#SBATCH --mem=32000MB               # memory per CORE; total memory is 1 TB (1,000,000 MB)
+#SBATCH --mem=32G               # memory per CORE; total memory is 1 TB (1,000,000 MB)
 
 ##nvidia-smi
-##python models/train_val.py
-python models/eval.py
+python models/train_val.py
+##python models/eval.py
