@@ -41,8 +41,8 @@ class ESMClassifier(torch.nn.Module):
         return out
 
 
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 def compute_clssification_metrics(target_classes, pred_classes):
-    from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
     acc = accuracy_score(target_classes, pred_classes)
     precision = precision_score(target_classes, pred_classes, average="weighted", zero_division=1)
     recall = recall_score(target_classes, pred_classes, average="weighted", zero_division=1)
@@ -53,6 +53,11 @@ def compute_clssification_metrics(target_classes, pred_classes):
             "f1": f1,
             "pred_classes": pred_classes, 
             "target_classes": target_classes}
+
+from sklearn.metrics import roc_auc_score
+def compute_roc_auc_score(target_cls_distributions, pred_cls_distributions):
+    roc_auc = roc_auc_score(target_cls_distributions, pred_cls_distributions, average="samples", multi_class="ovr")
+    return roc_auc
 
 
 @torch.no_grad()
@@ -72,7 +77,7 @@ def val(model, criterion, data_loader, device):
         total_loss += loss.item()
         # print(f"    batch no: {i}, loss: {loss.item()}")
         
-        pred_scores.append(torch.sigmoid(y_pred).detach().cpu().numpy())
+        pred_scores.append(torch.softmax(y_pred).detach().cpu().numpy())
         true_scores.append(y_true.detach().cpu().numpy())
         
         # if i==5: break
