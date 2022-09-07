@@ -30,11 +30,11 @@ model.load_state_dict(checkpoint['model_state_dict'])
 # dataset and dataloader
 test_dataset = SCOPDataset.X(test_data_file_path, model.batch_converter, class_dict, config.task, config.max_len)
 test_loader = DataLoader(test_dataset, config.batch_size, shuffle=False)
-print(f"val batches: {len(test_loader)}")
+print(f"test batches: {len(test_loader)}")
 
 
 val_loss, true_scores, pred_scores = Model.val(model, criterion, test_loader, config.device)
 metrics = Model.compute_clssification_metrics(true_scores, pred_scores.argmax(axis=1))
-roc_auc = Model.compute_roc_auc_score(true_scores, pred_scores)
+#roc_auc = Model.compute_roc_auc_score(true_scores, pred_scores, n_classes)
 
-print(f"acc={metrics['acc']:.4f}, precision={metrics['precision']:.4f}, recall={metrics['recall']:.4f}, f1={metrics['f1']:.4f}, roc_auc={roc_auc:.4f}")
+print(f"acc={metrics['acc']:.4f}, precision={metrics['precision']:.4f}, recall={metrics['recall']:.4f}, f1={metrics['f1']:.4f}")#, roc_auc={roc_auc:.4f}")

@@ -54,11 +54,19 @@ def compute_clssification_metrics(target_classes, pred_classes):
             "pred_classes": pred_classes, 
             "target_classes": target_classes}
 
-from sklearn.metrics import roc_auc_score
-def compute_roc_auc_score(target_cls_distributions, pred_cls_distributions):
-    roc_auc = roc_auc_score(target_cls_distributions, pred_cls_distributions, average="samples", multi_class="ovr")
-    return roc_auc
+def get_one_hot(labels, n_classes):
+    # labels shape: (n,)
+    shape = (labels.size, n_classes)
+    one_hot = np.zeros(shape)
+    rows = np.arange(labels.size)
+    one_hot[rows, labels] = 1
+    return one_hot 
 
+from sklearn.metrics import roc_auc_score
+def compute_roc_auc_score(target_classes, pred_cls_distributions, n_classes):
+    target_cls_distributions = get_one_hot(target_classes, n_classes)
+    roc_auc = roc_auc_score(target_cls_distributions, pred_cls_distributions, average="weighted", multi_class="ovr")
+    return roc_auc
 
 @torch.no_grad()
 def val(model, criterion, data_loader, device): 
@@ -71,20 +79,20 @@ def val(model, criterion, data_loader, device):
         seqs_tokens, y_true, seqs_lens = seqs_tokens.to(device), y_true.to(device), seqs_lens.to(device)
         model.zero_grad(set_to_none=True)
         y_pred = model(seqs_tokens, seqs_lens)
-        # print(y_pred.shape)
+        print(y_pred.shape)
 
         loss = criterion(y_pred, y_true)
         total_loss += loss.item()
         # print(f"    batch no: {i}, loss: {loss.item()}")
         
-        pred_scores.append(torch.softmax(y_pred).detach().cpu().numpy())
+        pred_scores.append(torch.nn.functional.softmax(y_pred, dim=1).detach().cpu().numpy())
         true_scores.append(y_true.detach().cpu().numpy())
         
         # if i==5: break
 
     
     true_scores, pred_scores = np.hstack(true_scores), np.vstack(pred_scores) #true_scores: [1, batch_size], pred_scores: [batch_size, n_classes]
-    #print(true_scores.shape, pred_scores.shape)
+    print(true_scores.shape, pred_scores.shape)
     return total_loss/len(data_loader), true_scores, pred_scores
 
 
