@@ -1,4 +1,4 @@
-6B1A, 3D6S, 4gbo, 4roq, 5l0x, 6dfz does not exists
+6B1A, 3D6S, 4gbo, 4roq, 5l0x, 6dfz, 6iwl, 3wwz, 5hbg, 5l0x does not exists
 
 #### Analyze
 * To vizualize the training progress: `tensorboard --logdir=outputs/tensorboard_runs/`

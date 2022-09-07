@@ -65,7 +65,7 @@ def get_one_hot(labels, n_classes):
 from sklearn.metrics import roc_auc_score
 def compute_roc_auc_score(target_classes, pred_cls_distributions, n_classes):
     target_cls_distributions = get_one_hot(target_classes, n_classes)
-    roc_auc = roc_auc_score(target_cls_distributions, pred_cls_distributions, average="weighted", multi_class="ovr")
+    roc_auc = roc_auc_score(target_cls_distributions, pred_cls_distributions, average="samples", multi_class="ovr")
     return roc_auc
 
 @torch.no_grad()
